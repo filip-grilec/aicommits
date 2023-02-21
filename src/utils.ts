@@ -58,6 +58,10 @@ export const getStagedDiff = async () => {
 	};
 };
 
+export const stageAll = async () => {
+	await execa('git', ['add', '--all']);
+};
+
 export const getDetectedMessage = (files: string[]) => `Detected ${files.length.toLocaleString()} staged file${files.length > 1 ? 's' : ''}`;
 
 const sanitizeMessage = (message: string) => message.trim().replace(/[\n\r]/g, '').replace(/(\w)\.$/, '$1');

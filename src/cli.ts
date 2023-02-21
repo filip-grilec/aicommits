@@ -13,6 +13,7 @@ import {
 	getStagedDiff,
 	getDetectedMessage,
 	generateCommitMessage,
+	stageAll,
 } from './utils.js';
 
 const argv = cli({
@@ -41,6 +42,8 @@ const argv = cli({
 
 	const detectingFiles = spinner();
 	detectingFiles.start('Detecting staged files');
+
+	await stageAll();
 	const staged = await getStagedDiff();
 
 	if (!staged) {
@@ -69,31 +72,11 @@ const argv = cli({
 	let message;
 	if (messages.length === 1) {
 		[message] = messages;
-		const confirmed = await confirm({
-			message: `Use this commit message?\n\n   ${message}\n`,
-		});
 
-		if (!confirmed || isCancel(confirmed)) {
-			outro('Commit cancelled');
-			return;
-		}
-	} else {
-		const selected = await select({
-			message: `Pick a commit message to use: ${dim('(Ctrl+c to exit)')}`,
-			options: messages.map(value => ({ label: value, value })),
-		});
-
-		if (isCancel(selected)) {
-			outro('Commit cancelled');
-			return;
-		}
-
-		message = selected;
+		// print message
+		outro('Message \n ' + green(message));
 	}
 
-	await execa('git', ['commit', '-m', message]);
-
-	outro(`${green('✔')} Successfully committed!`);
 })().catch((error) => {
 	outro(`${red('✖')} ${error.message}`);
 	process.exit(1);
