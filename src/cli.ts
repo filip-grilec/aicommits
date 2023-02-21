@@ -75,6 +75,10 @@ const argv = cli({
 
 		// print message
 		outro('Message \n ' + green(message));
+
+		// copy to clipboard
+		await execa('pbcopy', { input: message });
+		outro('Copied to clipboard');
 	}
 
 })().catch((error) => {
